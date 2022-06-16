@@ -1,21 +1,57 @@
 const express = require('express')
 const router = express.Router()
 const _wc = require('../../config/wc')
+const redis = require('redis')
+
+const redisClient = redis.createClient(process.env.REDIS_PORT)
+redisClient.connect()
 
 // middleware
 const auth = require('../../middleware/auth')
 
 // route GET api/products
-// @desc get all products
+// @desc get all products by traversing through each WC 'page' of products and building an array
+// of them
 // @access public
 
 router.get('/', async (req, res) => {
   try {
-    const response = await _wc.get('products', {
-      per_page: 40,
-    })
-    res.send(response.data)
-    console.log(response.data.length)
+    let allProducts = []
+    let breakLoop = false
+    let page = 1
+    while (!breakLoop) {
+      console.log(page)
+      const products = await _wc
+        .get('products', { per_page: 100, page: page })
+        .then((res) => res?.data)
+        .catch((err) => console.log(err?.response?.data))
+      if (products.length === 0 || !products) {
+        breakLoop = true
+      } else {
+        allProducts = allProducts.concat(products)
+        page = page + 1
+      }
+    }
+
+    // const response = await _wc.get('products', {
+    //   per_page: 40,
+    // })
+    await redisClient.set('products', JSON.stringify(allProducts))
+    res.send('success')
+    // console.log(response.data.length)
+  } catch (error) {
+    console.log(error.response.data)
+  }
+})
+
+// route GET api/products/redis
+// @desc get the products from the redis store
+// @access public
+
+router.get('/redis', async (req, res) => {
+  try {
+    const products = await redisClient.get('products')
+    res.json(products)
   } catch (error) {
     console.log(error.response)
   }
