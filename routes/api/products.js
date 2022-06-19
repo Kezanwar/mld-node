@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
     let allProducts = []
     let breakLoop = false
     let page = 1
+
     while (!breakLoop) {
       console.log(page)
       const products = await _wc
@@ -37,9 +38,9 @@ router.get('/', async (req, res) => {
     // const response = await _wc.get('products', {
     //   per_page: 40,
     // })
+    console.log(allProducts)
     await _redis.set('products', JSON.stringify(allProducts))
     res.send('success')
-    // console.log(response.data.length)
   } catch (error) {
     console.log(error.response.data)
   }
