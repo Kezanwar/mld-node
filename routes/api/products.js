@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const _wc = require('../../config/wc')
-const _redis = require('../../config/redis')
+const _wc = require('../../utilities/wc')
+const _redis = require('../../utilities/redis')
 // const redis = require('redis')
 
 // const redisClient = redis.createClient(process.env.REDIS_PORT)
