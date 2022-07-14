@@ -3,10 +3,6 @@ const router = express.Router()
 const _wc = require('../../utilities/wc')
 const _redis = require('../../utilities/redis')
 const axios = require('axios')
-// const redis = require('redis')
-
-// const redisClient = redis.createClient(process.env.REDIS_PORT)
-// redisClient.connect()
 
 // middleware
 const auth = require('../../middleware/auth')

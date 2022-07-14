@@ -13,6 +13,7 @@ app.get('/', (req, res) => res.send('mld api running'))
 // // define routes
 
 app.use('/api/redis', require('./routes/api/redis-products'))
+app.use('/api/auth', require('./routes/api/authentication'))
 
 if (process.env.ENVIRONMENT === 'test') {
   app.use('/api/test', require('./routes/api/redis-tests'))

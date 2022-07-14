@@ -58,7 +58,7 @@ router.get('/wc-api/getCategories', async (req, res) => {
 // @desc gets tags from WC and stores them in redis
 // @access public
 
-router.get('/getTags', async (req, res) => {
+router.get('/wc-api/getTags', async (req, res) => {
   try {
     let allTags = []
     let breakLoop = false
