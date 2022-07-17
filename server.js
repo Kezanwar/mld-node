@@ -15,8 +15,8 @@ app.get('/', (req, res) => res.send('mld api running'))
 app.use('/api/redis', require('./routes/api/redis-products'))
 app.use('/api/auth', require('./routes/api/authentication'))
 
-if (process.env.ENVIRONMENT === 'test') {
-  app.use('/api/test', require('./routes/api/redis-tests'))
-}
+// if (process.env.ENVIRONMENT === 'test') {
+//   app.use('/api/test', require('./routes/api/redis-tests'))
+// }
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
