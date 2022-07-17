@@ -9,7 +9,7 @@ const auth = require('../../middleware/auth')
 router.get('/users', auth, async (req, res) => {
   try {
     const users = await axios.get(`${_wp.URL}/wp-json/wp/v2/users`, {
-      headers: { Authorization: _wp.JWT },
+      headers: _wp.HEADERS(),
     })
     res.send(users.data)
   } catch (error) {
