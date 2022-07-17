@@ -5,13 +5,13 @@ const _redis = require('../../utilities/redis')
 const axios = require('axios')
 
 // middleware
-const auth = require('../../middleware/auth')
+const MLDauth = require('../../middleware/MLDauth')
 
 // route GET api/redis/products
 // @desc get the current products from the redis store
 // @access public
 
-router.get('/products', async (req, res) => {
+router.get('/products', MLDauth, async (req, res) => {
   try {
     const products = await _redis.get('products')
     res.json(JSON.parse(products))
@@ -24,7 +24,7 @@ router.get('/products', async (req, res) => {
 // @desc get the current categories from the redis store
 // @access public
 
-router.get('/categories', async (req, res) => {
+router.get('/categories', MLDauth, async (req, res) => {
   try {
     const categories = await _redis.get('categories')
     res.json(JSON.parse(categories))
@@ -37,7 +37,7 @@ router.get('/categories', async (req, res) => {
 // @desc get the current tags from the redis store
 // @access public
 
-router.get('/tags', async (req, res) => {
+router.get('/tags', MLDauth, async (req, res) => {
   try {
     const tags = await _redis.get('tags')
     res.json(JSON.parse(tags))
@@ -50,7 +50,7 @@ router.get('/tags', async (req, res) => {
 // @desc gets categories from WC and stores them in redis
 // @access public
 
-router.get('/getProdsByCat/:cat', async (req, res) => {
+router.get('/getProdsByCat/:cat', MLDauth, async (req, res) => {
   console.log(req.params)
   try {
     const cat = req.params.cat
@@ -65,7 +65,7 @@ router.get('/getProdsByCat/:cat', async (req, res) => {
 // @desc get a specific product by ID from Redis Cache
 // @access public
 
-router.get('/single?', async (req, res) => {
+router.get('/single?', MLDauth, async (req, res) => {
   const { id } = req.query
   try {
     let products = await _redis.get(`products`)
@@ -83,7 +83,7 @@ router.get('/single?', async (req, res) => {
 // @desc get a specific product by ID from Redis Cache
 // @access public
 
-router.get('/price/single?', async (req, res) => {
+router.get('/price/single?', MLDauth, async (req, res) => {
   const { id } = req.query
   try {
     let products = await _redis.get(`products`)
