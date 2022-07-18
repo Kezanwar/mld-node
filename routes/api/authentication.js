@@ -4,12 +4,12 @@ const _wp = require('../../utilities/wp')
 const axios = require('axios')
 
 // middleware
-const MLDauth = require('../../middleware/MLDauth')
+const auth = require('../../middleware/auth')
 
-router.get('/users', MLDauth, async (req, res) => {
+router.get('/users', auth(), async (req, res) => {
   try {
     const users = await axios.get(`${_wp.URL}/wp-json/wp/v2/users`, {
-      headers: _wp.HEADERS(),
+      headers: _wp.HEADERS,
     })
     res.send(users.data)
   } catch (error) {
