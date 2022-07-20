@@ -2,7 +2,7 @@ require('dotenv').config()
 
 // Custom middleware for PRIVATE AND PROTECTED ROUTES
 // WHich we can use to identify if the requests are coming from us
-const auth = () => {
+const auth = (jwt = false) => {
   return (req, res, next) => {
     // Get key from header
 

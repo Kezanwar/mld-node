@@ -100,4 +100,33 @@ router.get('/price/single?', auth(), async (req, res) => {
   }
 })
 
+// route GET api/redis/getVendors
+// @desc gets all stores from Dokan
+// @access public
+
+router.get('/redis/getVendors', async (req, res) => {
+  try {
+    const vendors = await _redis.get('vendors')
+    res.status(200).send(JSON.parse(vendors))
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// route GET api/redis/getVendorByid
+// @desc gets all stores from Dokan
+// @access public
+
+router.get('/redis/getVendorById/:id', async (req, res) => {
+  try {
+    let vendors = await _redis.get('vendors')
+    const id = req.params.id
+    vendors = JSON.parse(vendors)
+    const vendor = vendors.find((v) => id === v.id)
+    res.status(200).send(vendor)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 module.exports = router

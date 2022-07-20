@@ -12,6 +12,11 @@ const _redis = redis.createClient({
 _redis.on('error', (err) => {
   console.log('error' + err)
 })
+
+_redis.on('connect', () => {
+  console.log('Redis connected 🚀😎')
+})
+
 _redis.connect()
 
 module.exports = _redis
