@@ -82,29 +82,29 @@ router.get('/single?', auth(), async (req, res) => {
 // @desc get a specific product by ID from Redis Cache
 // @access public
 
-router.get('/price/single?', auth(), async (req, res) => {
-  const { id } = req.query
-  try {
-    let products = await _redis.get(`products`)
-    products = JSON.parse(products)
-    const prod = products.find((prod) => prod.id == id)
-    const regexp = /[\d\.]+/
-    const priceHTMLArr = prod.price_html.split('>')
-    let priceArr = []
-    priceHTMLArr.forEach((s) => priceArr.push(s.match(regexp)))
-    res.status(200).send(priceArr.filter((el) => el !== null))
-  } catch (error) {
-    if (error?.response?.data?.message === 'Invalid ID.') {
-      res.json("error, product doesn't exist")
-    }
-  }
-})
+// router.get('/price/single?', auth(), async (req, res) => {
+//   const { id } = req.query
+//   try {
+//     let products = await _redis.get(`products`)
+//     products = JSON.parse(products)
+//     const prod = products.find((prod) => prod.id == id)
+//     const regexp = /[\d\.]+/
+//     const priceHTMLArr = prod.price_html.split('>')
+//     let priceArr = []
+//     priceHTMLArr.forEach((s) => priceArr.push(s.match(regexp)))
+//     res.status(200).send(priceArr.filter((el) => el !== null))
+//   } catch (error) {
+//     if (error?.response?.data?.message === 'Invalid ID.') {
+//       res.json("error, product doesn't exist")
+//     }
+//   }
+// })
 
 // route GET api/redis/getVendors
 // @desc gets all stores from Dokan
 // @access public
 
-router.get('/redis/getVendors', async (req, res) => {
+router.get('/vendors', async (req, res) => {
   try {
     const vendors = await _redis.get('vendors')
     res.status(200).send(JSON.parse(vendors))
@@ -117,12 +117,12 @@ router.get('/redis/getVendors', async (req, res) => {
 // @desc gets all stores from Dokan
 // @access public
 
-router.get('/redis/getVendorById/:id', async (req, res) => {
+router.get('/getVendorById/:id', async (req, res) => {
   try {
     let vendors = await _redis.get('vendors')
     const id = req.params.id
     vendors = JSON.parse(vendors)
-    const vendor = vendors.find((v) => id === v.id)
+    const vendor = vendors.find((v) => parseInt(id) === v.id)
     res.status(200).send(vendor)
   } catch (error) {
     console.log(error)
