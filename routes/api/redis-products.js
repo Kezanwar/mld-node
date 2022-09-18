@@ -78,28 +78,6 @@ router.get('/single?', auth(), async (req, res) => {
   }
 })
 
-// route GET api/redis/single?id=****
-// @desc get a specific product by ID from Redis Cache
-// @access public
-
-// router.get('/price/single?', auth(), async (req, res) => {
-//   const { id } = req.query
-//   try {
-//     let products = await _redis.get(`products`)
-//     products = JSON.parse(products)
-//     const prod = products.find((prod) => prod.id == id)
-//     const regexp = /[\d\.]+/
-//     const priceHTMLArr = prod.price_html.split('>')
-//     let priceArr = []
-//     priceHTMLArr.forEach((s) => priceArr.push(s.match(regexp)))
-//     res.status(200).send(priceArr.filter((el) => el !== null))
-//   } catch (error) {
-//     if (error?.response?.data?.message === 'Invalid ID.') {
-//       res.json("error, product doesn't exist")
-//     }
-//   }
-// })
-
 // route GET api/redis/getVendors
 // @desc gets all stores from Dokan
 // @access public
