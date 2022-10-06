@@ -2,20 +2,53 @@ const express = require('express')
 const router = express.Router()
 const _redis = require('../../utilities/redis')
 const axios = require('axios')
+const _ = require('underscore')
 
 // middleware
 const auth = require('../../middleware/auth')
+const { getRedisJSON } = require('../../utilities/getRedis')
 
-// route GET api/redis/products
+// route GET api/redis/products/?<query_param_filters>
 // @desc get the current products from the redis store
 // @access public
 
 router.get('/products', auth(), async (req, res) => {
+  console.log(req.query)
+  console.log(Object.values(req.query).flat())
   try {
     const products = await _redis.get('products')
     res.json(JSON.parse(products))
   } catch (error) {
     console.log(error.response)
+  }
+})
+
+// route GET api/redis/single-product/recommended
+// @desc get the current products from the redis store
+// @access public
+
+router.get('/single-product/recommended', auth(), async (req, res) => {
+  const { product_category_id, store_id } = req.query
+  console.log(req.query)
+  if (!product_category_id || !store_id) {
+    res.status(400).send({ error_message: 'Incorrect query params found' })
+    return
+  }
+  try {
+    const products = await getRedisJSON('products')
+    const vendors = await getRedisJSON('vendors')
+    const thisVendor = vendors.find((v) => v.id === parseInt(store_id))
+    const recommendedProds = _.shuffle(products).filter((p) =>
+      p.categories.some((c) => c.id === parseInt(product_category_id))
+    )
+    const respsonse = {
+      recommended_products: recommendedProds.slice(0, 6),
+      store_products: thisVendor.products.slice(0, 6),
+    }
+    res.json(respsonse)
+    return
+  } catch (error) {
+    console.log(error)
   }
 })
 
@@ -54,7 +87,8 @@ router.get('/getProdsByCat/:cat', auth(), async (req, res) => {
   try {
     const cat = req.params.cat
     const prodsByCat = await _redis.get(cat)
-    res.status(200).send(prodsByCat ? JSON.parse(prodsByCat) : 'null')
+    if (prodsByCat) res.status(200).send(JSON.parse(prodsByCat))
+    if (!prodsByCat) res.status(400).send({ error_message: 'No products found' })
   } catch (error) {
     console.log(error.response)
   }
