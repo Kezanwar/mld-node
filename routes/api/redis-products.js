@@ -36,14 +36,13 @@ router.get('/single-product/recommended', auth(), async (req, res) => {
   }
   try {
     const products = await getRedisJSON('products')
-    const vendors = await getRedisJSON('vendors')
-    const thisVendor = vendors.find((v) => v.id === parseInt(store_id))
+    const thisVendorProds = products.filter((p) => p.store.id === parseInt(store_id))
     const recommendedProds = _.shuffle(products).filter((p) =>
       p.categories.some((c) => c.id === parseInt(product_category_id))
     )
     const respsonse = {
       recommended_products: recommendedProds.slice(0, 6),
-      store_products: thisVendor.products.slice(0, 6),
+      store_products: thisVendorProds.slice(0, 6),
     }
     res.json(respsonse)
     return
@@ -100,6 +99,7 @@ router.get('/getProdsByCat/:cat', auth(), async (req, res) => {
 
 router.get('/single?', auth(), async (req, res) => {
   const { id } = req.query
+  console.log(id)
   try {
     let products = await _redis.get(`products`)
     products = JSON.parse(products)
