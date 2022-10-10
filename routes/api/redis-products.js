@@ -23,34 +23,6 @@ router.get('/products', auth(), async (req, res) => {
   }
 })
 
-// route GET api/redis/single-product/recommended
-// @desc get the current products from the redis store
-// @access public
-
-router.get('/single-product/recommended', auth(), async (req, res) => {
-  const { product_category_id, store_id } = req.query
-  console.log(req.query)
-  if (!product_category_id || !store_id) {
-    res.status(400).send({ error_message: 'Incorrect query params found' })
-    return
-  }
-  try {
-    const products = await getRedisJSON('products')
-    const thisVendorProds = products.filter((p) => p.store.id === parseInt(store_id))
-    const recommendedProds = _.shuffle(products).filter((p) =>
-      p.categories.some((c) => c.id === parseInt(product_category_id))
-    )
-    const respsonse = {
-      recommended_products: recommendedProds.slice(0, 6),
-      store_products: thisVendorProds.slice(0, 6),
-    }
-    res.json(respsonse)
-    return
-  } catch (error) {
-    console.log(error)
-  }
-})
-
 // route GET api/redis/categories
 // @desc get the current categories from the redis store
 // @access public
@@ -101,10 +73,23 @@ router.get('/single?', auth(), async (req, res) => {
   const { id } = req.query
   console.log(id)
   try {
-    let products = await _redis.get(`products`)
-    products = JSON.parse(products)
+    let products = await getRedisJSON(`products`)
     const prod = products.find((prod) => prod.id == id)
-    res.status(200).send(prod)
+    if (!prod) {
+      res.status(400).json('prod doesnt exist')
+    }
+    const category_id = prod.categories[0].id
+    const store_id = prod.store.id
+    const thisVendorProds = products.filter((p) => p.store.id == store_id && p.id !== parseInt(id))
+    const recommendedProds = _.shuffle(products).filter(
+      (p) => p.id !== parseInt(id) && p.categories.some((c) => c.id == category_id)
+    )
+    const response = {
+      product: prod,
+      recommended_products: recommendedProds.slice(0, 6),
+      store_products: thisVendorProds.slice(0, 6),
+    }
+    res.status(200).send(response)
   } catch (error) {
     if (error?.response?.data?.message === 'Invalid ID.') {
       res.json("error, product doesn't exist")
